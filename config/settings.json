@@ -1,0 +1,9 @@
+{
+  "default": {
+    "mtproto_api": {
+      "app_id": "Follow https://my.telegram.org/apps",
+      "app_hash": "Follow https://my.telegram.org/apps"
+    },
+    "bot_token": "PLACE TELEGRAM BOT TOKEN HERE"
+  }
+}
