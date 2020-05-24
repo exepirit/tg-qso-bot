@@ -1,9 +1,14 @@
 [tool.poetry]
 name = "tg-qso-bot"
-version = "1.0.0"
+version = "1.0.1"
 description = "Simple HAM helper bot written on Python"
 authors = ["exepirit <you@example.com>"]
 license = "MIT"
+repository = "https://github.com/exepirit/tg-qso-bot"
+readme = "README.md"
+
+[tool.poetry.scripts]
+tg-qso-bot = "tg_qso_bot.bot:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"

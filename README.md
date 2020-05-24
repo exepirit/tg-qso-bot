@@ -18,5 +18,5 @@ create copy of this file for editing. It should be called `settings.local.json`.
 
 ## Usage
 ```shell script
-python3 -m tg-qso-bot.qso
+python3 -m tg_qso_bot.qso
 ```
