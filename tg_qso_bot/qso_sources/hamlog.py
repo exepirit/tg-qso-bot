@@ -13,16 +13,16 @@ HAMLOG_USERAGENT = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:84.0) Gecko/20100
 class _HamlogSession:
     CSRF_TOKEN_FIELD = "csrf-progress"
 
-    def __init__(self, url: str = HAMLOG_URL, default_headers=None):
+    def __init__(self, session: requests.Session = None, url: str = HAMLOG_URL, default_headers=None):
         if default_headers is None:
             default_headers = {}
         self._url = url
         self._headers = {"User-Agent": self.CSRF_TOKEN_FIELD, **default_headers}
         self._token: Optional[str] = None
+        self._session: requests.Session = session or requests.Session()
 
     def retrieve_token(self) -> str:
-        with requests.Session() as session:
-            response = session.request("GET", self._url, headers=self._headers)
+        response = self._session.request("GET", self._url, headers=self._headers)
         if not response.ok:
             raise ServerResponseError(self._url, response.status_code)
         soup = BeautifulSoup(response.text, "html.parser")
@@ -43,7 +43,6 @@ class HamlogQsoSource(QsoSource):
     def __init__(self, user_agent: str = None):
         self._url = HAMLOG_URL
         self._headers = {"User-Agent": user_agent or HAMLOG_USERAGENT}
-        self._session = _HamlogSession()
 
     def get_qso_list(self, callsign: str, limit: int, skip: int = 0) -> List[Qso]:
         """
@@ -58,8 +57,10 @@ class HamlogQsoSource(QsoSource):
         return qso[:limit]
 
     def _get_qso_log_page(self, callsign: str):
-        data = {"callsign": callsign, "csrf-progress": self._session.token}
-        response = requests.post(f"{self._url}/progress.php", headers=self._headers, data=data)
+        with requests.Session() as session:
+            hamlog_session = _HamlogSession(session)
+            data = {"callsign": callsign, "csrf-progress": hamlog_session.token}
+            response = session.post(f"{self._url}/progress.php", headers=self._headers, data=data)
         if not response.ok:
             raise ServerResponseError(self._url, response.status_code)
         return response.text
