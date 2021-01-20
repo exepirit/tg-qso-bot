@@ -1,6 +1,6 @@
 import requests
 from typing import List, Dict, Optional
-from datetime import date
+from datetime import date, datetime
 from bs4 import BeautifulSoup
 from tg_qso_bot.models import Qso
 from .source import QsoSource
@@ -53,7 +53,7 @@ class HamlogQsoSource(QsoSource):
         :return: List of QSOs.
         """
         page = self._get_qso_log_page(callsign)
-        qso = self._parse_qso_list(page)
+        qso = self._parse_qso_list(callsign, page)
         return qso[:limit]
 
     def _get_qso_log_page(self, callsign: str):
@@ -65,26 +65,27 @@ class HamlogQsoSource(QsoSource):
             raise ServerResponseError(self._url, response.status_code)
         return response.text
 
-    def _parse_qso_list(self, data: str) -> List[Qso]:
+    def _parse_qso_list(self, callsign_1: str, data: str) -> List[Qso]:
         # LEGACY CODE!!! Need to rewrite to a modern library
         soup = BeautifulSoup(data, "html.parser")
         result = []
-        try:
-            table = soup.find("table", {"id": "qsos"})
-            table.find("thead").decompose()
-            table.find("tfoot").decompose()
-            for tr in table.find_all("tr"):
-                fields = [f.renderContents().strip().decode("utf-8") for f in tr.find_all("td")]
-                qso_date = [int(s) for s in fields[2].split(".")]  # 01.01.1970 -> [1, 1, 1970]
-                qso = Qso(
-                    call_sign_1=fields[0],
-                    call_sign_2=fields[1],
-                    date=date(*reversed(qso_date)),
-                    band=fields[3],
-                    mode=fields[4],
-                    report=fields[5],
-                )
-                result.append(qso)
-        except AttributeError as e:
-            raise ParsingError(e)
+        table = soup.find("table", {"id": "qsos"})
+        if not table:
+            raise ParsingError("Could not find QSO table", data)
+        if thead := table.find("thead"):
+            thead.decompose()
+        if tfoot := table.find("tfoot"):
+            tfoot.decompose()
+        for tr in table.find_all("tr"):
+            fields = [f.renderContents().strip().decode("utf-8") for f in tr.find_all("td")]
+            datetime.strptime(fields[0], "%d %b %Y").date()
+            qso = Qso(
+                call_sign_1=callsign_1,
+                call_sign_2=fields[1],
+                date=datetime.strptime(fields[0], "%d %b %Y").date(),
+                band=fields[2],
+                mode=fields[3],
+                report="-",
+            )
+            result.append(qso)
         return result
