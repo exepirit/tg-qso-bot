@@ -2,6 +2,7 @@ import logging
 from pyrogram import Client, Filters, Message
 from dynaconf import settings
 from tg_qso_bot.qso_sources.hamlog import HamlogQsoSource
+from tg_qso_bot.utils.logging import create_logger
 from .reply_format import format_qso
 
 HELP_MESSAGE = """
@@ -9,7 +10,7 @@ HELP_MESSAGE = """
 Бот покажет последние 10 связей с данным позывным.
 """
 
-logging.basicConfig(format="%(asctime)s - [%(levelname)s] - %(message)s", level=logging.WARN)
+_logger = create_logger("bot")
 app = Client(
     "data",
     api_id=settings.MTPROTO_API.APP_ID,
@@ -24,10 +25,11 @@ def request_qso(client: Client, message: Message):
         message.reply_text(HELP_MESSAGE)
         return
     callsign = message.command[1].upper()
-    logging.info(
-        'User %s %s requested QSO for "%s"',
+    _logger.info(
+        'User \"%s %s\" (%d) requested QSO for "%s"',
         message.from_user.first_name,
         message.from_user.last_name,
+        message.from_user.id,
         callsign,
     )
     hamlog = HamlogQsoSource()
