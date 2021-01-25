@@ -24,6 +24,12 @@ def request_qso(client: Client, message: Message):
         message.reply_text(HELP_MESSAGE)
         return
     callsign = message.command[1].upper()
+    logging.info(
+        'User %s %s requested QSO for "%s"',
+        message.from_user.first_name,
+        message.from_user.last_name,
+        callsign,
+    )
     hamlog = HamlogQsoSource()
     qso_list = hamlog.get_qso_list(callsign, limit=10)
     header = f"Последние {len(qso_list)} связей с {callsign}\n"
@@ -32,7 +38,7 @@ def request_qso(client: Client, message: Message):
         message.chat.id,
         f"{header}```{table}```",
         parse_mode="markdown",
-        reply_to_message_id=message.message_id
+        reply_to_message_id=message.message_id,
     )
 
 
