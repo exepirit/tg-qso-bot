@@ -11,14 +11,14 @@ HELP_MESSAGE = """
 
 logging.basicConfig(format="%(asctime)s - [%(levelname)s] - %(message)s", level=logging.WARN)
 app = Client(
-    ":memory:",
+    "data",
     api_id=settings.MTPROTO_API.APP_ID,
     api_hash=settings.MTPROTO_API.APP_HASH,
     bot_token=settings.BOT_TOKEN,
 )
 
 
-@app.on_message(Filters.command("qso"))
+@app.on_message(Filters.command(["qso", f"qso@{settings.BOT_NAME}"]))
 def request_qso(client: Client, message: Message):
     if len(message.command) < 2:
         message.reply_text(HELP_MESSAGE)

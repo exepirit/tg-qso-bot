@@ -1,5 +1,6 @@
 {
   "default": {
+    "bot_name": "hamlog_bot",
     "mtproto_api": {
       "app_id": "Follow https://my.telegram.org/apps",
       "app_hash": "Follow https://my.telegram.org/apps"
