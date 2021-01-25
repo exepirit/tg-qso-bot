@@ -1,8 +1,9 @@
 import logging
-from pyrogram import Client, Filters, Message
+import sentry_sdk
+from pyrogram import Client, filters
+from pyrogram.types import Message
 from dynaconf import settings
 from tg_qso_bot.qso_sources.hamlog import HamlogQsoSource
-from tg_qso_bot.utils.logging import create_logger
 from .reply_format import format_qso
 
 HELP_MESSAGE = """
@@ -10,7 +11,7 @@ HELP_MESSAGE = """
 Бот покажет последние 10 связей с данным позывным.
 """
 
-_logger = create_logger("bot")
+_logger = logging.getLogger("bot")
 app = Client(
     "data",
     api_id=settings.MTPROTO_API.APP_ID,
@@ -19,7 +20,7 @@ app = Client(
 )
 
 
-@app.on_message(Filters.command(["qso", f"qso@{settings.BOT_NAME}"]))
+@app.on_message(filters.command(["qso", f"qso@{settings.BOT_NAME}"]))
 def request_qso(client: Client, message: Message):
     if len(message.command) < 2:
         message.reply_text(HELP_MESSAGE)
@@ -45,4 +46,5 @@ def request_qso(client: Client, message: Message):
 
 
 if __name__ == "__main__":
+    sentry_sdk.init()
     app.run()
