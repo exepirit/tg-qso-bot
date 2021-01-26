@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tg-qso-bot"
-version = "1.2.1"
+version = "1.2.2"
 description = "Simple HAM helper bot written on Python"
 authors = ["exepirit <you@example.com>"]
 license = "MIT"
@@ -14,8 +14,9 @@ tg-qso-bot = "tg_qso_bot.bot:main"
 python = "^3.8"
 dynaconf = "^2.2.3"
 beautifulsoup4 = "^4.9.1"
-pyrogram = "^0.17.1"
+pyrogram = "^1.1.0"
 requests = "^2.23.0"
+sentry-sdk = "^0.19.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"
