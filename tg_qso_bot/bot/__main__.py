@@ -1,5 +1,6 @@
 import logging
 import sentry_sdk
+from typing import Callable
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from dynaconf import settings
@@ -21,7 +22,11 @@ app = Client(
 )
 
 
-@app.on_message(filters.command("qso"))
+def _command_filter(cmd: str, delimiter: str = "@") -> Callable:
+    return filters.command([cmd, cmd + delimiter + settings.BOT_NAME])
+
+
+@app.on_message(_command_filter("qso"))
 @handle_errors
 async def request_qso(client: Client, message: Message):
     if len(message.command) < 2:

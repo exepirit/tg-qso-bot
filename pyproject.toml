@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tg-qso-bot"
-version = "1.2.2"
+version = "1.2.3"
 description = "Simple HAM helper bot written on Python"
 authors = ["exepirit <you@example.com>"]
 license = "MIT"
