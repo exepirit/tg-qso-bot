@@ -5,7 +5,7 @@ from pyrogram.types import Message
 from dynaconf import settings
 from tg_qso_bot.qso_sources.hamlog import HamlogQsoSource
 from tg_qso_bot.bot.errors_handling import handle_errors
-from tg_qso_bot.bot.app import app
+from tg_qso_bot.bot.app import app, log
 from tg_qso_bot.models import Qso
 
 HELP_MESSAGE = """
@@ -43,9 +43,10 @@ async def request_qso(client: Client, message: Message):
     qso_list = hamlog.get_qso_list(callsign, limit=10)
     header = f"Последние {len(qso_list)} связей с {callsign}\n"
     table = "\n".join(format_qso(q) for q in qso_list)
-    await client.send_message(
+    reply_message = await client.send_message(
         message.chat.id,
         f"{header}```{table}```",
         parse_mode="markdown",
         reply_to_message_id=message.message_id,
     )
+    log.register_reply(message, reply_message)

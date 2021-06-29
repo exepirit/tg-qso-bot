@@ -1,10 +1,12 @@
 from pyrogram import Client
 from dynaconf import settings
+from .messages_log import MessagesLog
 
 
 app = Client(
     "data",
-    api_id=settings.MTPROTO_API.APP_ID,
-    api_hash=settings.MTPROTO_API.APP_HASH,
-    bot_token=settings.BOT_TOKEN,
+    api_id=str(settings.MTPROTO_API.APP_ID),
+    api_hash=str(settings.MTPROTO_API.APP_HASH),
+    bot_token=str(settings.BOT_TOKEN),
 )
+log = MessagesLog()
