@@ -25,7 +25,7 @@ def _command_filter(cmd: str, delimiter: str = "@") -> Callable:
 
 
 @app.on_message(_command_filter("qso"))
-@handle_errors
+@handle_errors()
 async def request_qso(client: Client, message: Message):
     if len(message.command) < 2:
         await message.reply_text(HELP_MESSAGE)

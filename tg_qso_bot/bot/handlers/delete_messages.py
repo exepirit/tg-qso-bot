@@ -1,4 +1,5 @@
 import logging
+from tg_qso_bot.bot.errors_handling import handle_errors
 from typing import List
 from pyrogram import Client
 from pyrogram.types import Message
@@ -33,6 +34,7 @@ class GarbageReplysCollector:
 
 
 @app.on_deleted_messages()
+@handle_errors(inlude_context=False)
 async def delete_messages(client: Client, messages: List[Message]):
     collector = GarbageReplysCollector(client, log)
     for message in messages:
