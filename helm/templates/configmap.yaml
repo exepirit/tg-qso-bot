@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tg-qso-bot.fullname" . }}
+  labels:
+    {{- include "tg-qso-bot.labels" . | nindent 4 }}
+data:
+  settings.json: |
+    {
+      "default": {
+        "bot_name": "{{ required "Bot name required" .Values.botUsername }}",
+        "mtproto_api": {
+          "app_id": "{{ required "Telegram app ID required. Please follow https://my.telegram.org/apps" .Values.telegramApp.id }}",
+          "app_hash": "{{ required "Telegram app ID required. Please follow https://my.telegram.org/apps" .Values.telegramApp.hash }}"
+        },
+        "bot_token": "{{ required "Bot API token required" .Values.botToken }}"
+      }
+    }

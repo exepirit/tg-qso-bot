@@ -18,16 +18,28 @@ def _set_event_context(scope: sentry_sdk.Scope, message: Message):
     scope.set_context("message", message.__dict__)
 
 
-def handle_errors(fn):
-    async def wrapper(client: Client, message: Message, *args, **kwargs):
-        with sentry_sdk.push_scope() as scope:
-            _set_event_context(scope, message)
+def handle_errors(inlude_context: bool = True):
+    def without_context(fn):
+        async def subwrapper(*args, **kwargs):
             try:
-                await fn(client, message, *args, **kwargs)
+                await fn(*args, **kwargs)
             except Exception as e:
-                accident_id = sentry_sdk.capture_exception(e, scope=scope)
-                await client.send_message(
-                    message.chat.id, _ERROR_MESSAGE.format(accident_id=accident_id)
-                )
+                sentry_sdk.capture_exception(e)
+                raise
+        return subwrapper
 
-    return wrapper
+    def with_context(fn):
+        async def subwrapper(client: Client, message: Message, *args, **kwargs):
+            with sentry_sdk.push_scope() as scope:
+                _set_event_context(scope, message)
+                try:
+                    await fn(client, message, *args, **kwargs)
+                except Exception as e:
+                    accident_id = sentry_sdk.capture_exception(e, scope=scope)
+                    await client.send_message(
+                        message.chat.id, _ERROR_MESSAGE.format(accident_id=accident_id)
+                    )
+                    raise
+        return subwrapper
+
+    return with_context if inlude_context else without_context

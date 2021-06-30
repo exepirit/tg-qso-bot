@@ -1,0 +1,41 @@
+# Default values for tg-qso-bot.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+botUsername: ""
+telegramApp:
+  id: ""
+  hash: ""
+botToken: ""
+
+image:
+  repository: exepir1t/tg-qso-bot
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+  # fsGroup: 2000
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
