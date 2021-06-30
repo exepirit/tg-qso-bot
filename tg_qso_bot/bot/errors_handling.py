@@ -25,6 +25,7 @@ def handle_errors(inlude_context: bool = True):
                 await fn(*args, **kwargs)
             except Exception as e:
                 sentry_sdk.capture_exception(e)
+                raise
         return subwrapper
 
     def with_context(fn):
@@ -38,6 +39,7 @@ def handle_errors(inlude_context: bool = True):
                     await client.send_message(
                         message.chat.id, _ERROR_MESSAGE.format(accident_id=accident_id)
                     )
+                    raise
         return subwrapper
 
     return with_context if inlude_context else without_context
