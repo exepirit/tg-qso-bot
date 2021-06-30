@@ -32,17 +32,13 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: settings
-              mountPath: /app/config/
+          envFrom:
+            - configMapRef:
+                name: {{ include "tg-qso-bot.fullname" . }}
       nodeSelector:
         {{- toYaml .Values.nodeSelector | nindent 8 }}
       affinity:
         {{- toYaml .Values.affinity | nindent 8 }}
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
-      volumes:
-        - name: settings
-          configMap:
-            name: {{ include "tg-qso-bot.fullname" . }}
 
