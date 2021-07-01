@@ -14,9 +14,9 @@ tg-qso-bot = "tg_qso_bot.bot:main"
 python = "^3.8"
 dynaconf = "^2.2.3"
 beautifulsoup4 = "^4.9.1"
-pyrogram = "^1.1.0"
 requests = "^2.23.0"
 sentry-sdk = "^0.19.5"
+Pyrogram = "^1.2.9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.2"

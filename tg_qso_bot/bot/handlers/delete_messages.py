@@ -1,42 +1,26 @@
 import logging
-from tg_qso_bot.bot.errors_handling import handle_errors
+import pyrogram
 from typing import List
-from pyrogram import Client
-from pyrogram.types import Message
-from tg_qso_bot.bot.app import app, log
-from tg_qso_bot.bot.messages_log import MessagesLog
+from tg_qso_bot.bot import messages_log
+from tg_qso_bot.bot.app import watchdog, log
 
 _logger = logging.getLogger("bot")
 
 
-class GarbageReplysCollector:
-    """ Collects and delete dangling bot replys without parent message. """
-
-    def __init__(self, client: Client, log: MessagesLog) -> None:
-        self._client = client
-        self._log = log
-
-    async def delete_garbage_replys_for(self, message_id: int):
-        """ Delete dangling bot replys for message with ID `message_id`. """
-        if not self._log.has_reply(message_id):
-            return
-
-        for reply in self._log.iter_replys(message_id):
-            await self._delete_reply_in_chat(reply.chat_id, reply.reply_id)
-
-    async def _delete_reply_in_chat(self, chat_id: int, reply_id: int):
-        reply_message = await self._client.get_messages(chat_id, reply_id)
-        if not isinstance(reply_message, Message):
-            return
-        if reply_message.reply_to_message.empty:
-            await self._client.delete_messages(chat_id, reply_id)
-            _logger.info("Deleted reply message #%d", reply_id)
+async def delete_reply(client: "pyrogram.Client", record: "messages_log.LogRecord"):
+    await client.delete_messages(record.chat_id, record.reply_id)
+    _logger.info("Deleted reply message #%d in chat #%d", record.reply_id, record.chat_id)
 
 
-@app.on_deleted_messages()
-@handle_errors(inlude_context=False)
-async def delete_messages(client: Client, messages: List[Message]):
-    collector = GarbageReplysCollector(client, log)
-    for message in messages:
-        await collector.delete_garbage_replys_for(message.message_id)
+@watchdog.on_delete_messages()
+async def on_delete_reply(client: "pyrogram.Client", deleted_messages: List["pyrogram.types.Message"]):
+    for deleted_message in deleted_messages:
+        if deleted_message.chat is None:
+            _logger.warning("Message #%d deleted in unknown chat", deleted_message.message_id)
+            continue
+        for record in log:
+            if deleted_message.message_id == record.message_id and deleted_message.chat.id == record.chat_id:
+                await delete_reply(client, record)
+                # TODO: delete message from log
+
 
