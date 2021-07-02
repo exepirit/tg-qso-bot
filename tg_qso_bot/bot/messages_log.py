@@ -26,6 +26,14 @@ class MessagesLog:
         )
         self._put_record(record)
 
+    def delete_record(self, chat_id: int, message_id: int):
+        """ Deletes message from log. """
+        for i, record in enumerate(self._buffer):
+            if record.chat_id == chat_id and record.message_id == message_id:
+                self._buffer.pop(i)
+                return
+        raise KeyError("Record not found in log")
+
     def _put_record(self, record: LogRecord) -> int:
         if len(self._buffer) > self._buffer_max_size:
             self._buffer.pop(0)

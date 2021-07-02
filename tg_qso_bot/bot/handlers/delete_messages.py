@@ -21,6 +21,6 @@ async def on_delete_reply(client: "pyrogram.Client", deleted_messages: List["pyr
         for record in log:
             if deleted_message.message_id == record.message_id and deleted_message.chat.id == record.chat_id:
                 await delete_reply(client, record)
-                # TODO: delete message from log
+                log.delete_record(record.chat_id, record.message_id)
 
 
