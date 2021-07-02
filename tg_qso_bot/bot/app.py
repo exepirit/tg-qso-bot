@@ -1,6 +1,7 @@
 from pyrogram import Client
 from dynaconf import settings
 from .messages_log import MessagesLog
+from .messages_watchdog import MessagesWatchdog
 
 
 app = Client(
@@ -10,3 +11,4 @@ app = Client(
     bot_token=str(settings.BOT_TOKEN),
 )
 log = MessagesLog()
+watchdog = MessagesWatchdog(app, log)

@@ -5,14 +5,12 @@ metadata:
   labels:
     {{- include "tg-qso-bot.labels" . | nindent 4 }}
 data:
-  settings.json: |
-    {
-      "default": {
-        "bot_name": "{{ required "Bot name required" .Values.botUsername }}",
-        "mtproto_api": {
-          "app_id": "{{ required "Telegram app ID required. Please follow https://my.telegram.org/apps" .Values.telegramApp.id }}",
-          "app_hash": "{{ required "Telegram app ID required. Please follow https://my.telegram.org/apps" .Values.telegramApp.hash }}"
-        },
-        "bot_token": "{{ required "Bot API token required" .Values.botToken }}"
-      }
-    }
+  ENVVAR_PREFIX_FOR_DYNACONF: "false"
+  BOT_NAME: {{ required "Bot name required" .Values.botUsername | quote }}
+  BOT_TOKEN: {{ required "Bot API token required" .Values.botToken | quote }}
+  MTPROTO_API__APP_ID: {{ required "Telegram app ID required. Please follow https://my.telegram.org/apps" .Values.telegramApp.id | quote }}
+  MTPROTO_API__APP_HASH: {{ required "Telegram app ID required. Please follow https://my.telegram.org/apps" .Values.telegramApp.hash | quote }}
+  {{- if .Values.sentry }}
+  SENTRY_DSN: {{ .Values.sentry.dsn | quote }}
+  SENTRY_RELEASE: {{ .Chart.AppVersion | default .Values.image.tag | quote }}
+  {{- end -}}

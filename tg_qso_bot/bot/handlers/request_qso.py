@@ -28,7 +28,8 @@ def _command_filter(cmd: str, delimiter: str = "@") -> Callable:
 @handle_errors()
 async def request_qso(client: Client, message: Message):
     if len(message.command) < 2:
-        await message.reply_text(HELP_MESSAGE)
+        reply_message = await message.reply_text(HELP_MESSAGE)
+        log.register_reply(message, reply_message)
         return
     callsign = message.command[1].upper()
     user_name = (

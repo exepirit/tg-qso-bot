@@ -26,22 +26,20 @@ class MessagesLog:
         )
         self._put_record(record)
 
-    def has_reply(self, message_id: int) -> bool:
-        """ Returns True if provided message has logged reply. """
-        return any(
-            r.message_id == message_id
-            for r in self._buffer
-        )
-
-    def iter_replys(self, message_id: int) -> Iterator[LogRecord]:
-        """ Returns log records, that are reply for provided message. """
-        for r in self._buffer:
-            if r.message_id == message_id:
-                yield r
+    def delete_record(self, chat_id: int, message_id: int):
+        """ Deletes message from log. """
+        for i, record in enumerate(self._buffer):
+            if record.chat_id == chat_id and record.message_id == message_id:
+                self._buffer.pop(i)
+                return
+        raise KeyError("Record not found in log")
 
     def _put_record(self, record: LogRecord) -> int:
         if len(self._buffer) > self._buffer_max_size:
             self._buffer.pop(0)
         self._buffer.append(record)
         return len(self._buffer) - 1
+
+    def __iter__(self) -> Iterator[LogRecord]:
+        yield from self._buffer
 

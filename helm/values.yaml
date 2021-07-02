@@ -8,6 +8,9 @@ telegramApp:
   hash: ""
 botToken: ""
 
+sentry: {}
+ # dsn: ""
+
 image:
   repository: exepir1t/tg-qso-bot
   pullPolicy: IfNotPresent
