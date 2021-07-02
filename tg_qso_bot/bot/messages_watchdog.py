@@ -1,5 +1,4 @@
 import asyncio
-from subprocess import call
 import pyrogram
 from pyrogram.types import Message, Chat
 from typing import Awaitable, Callable, List
@@ -46,5 +45,5 @@ class MessagesWatchdog:
     async def run(self):
         while True:
             await self.glance()
-            await asyncio.sleep(5)
+            await asyncio.sleep(30)
     
