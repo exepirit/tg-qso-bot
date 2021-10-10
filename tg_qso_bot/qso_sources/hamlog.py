@@ -58,6 +58,7 @@ class HamlogQsoSource(QsoSource):
 
     def _get_qso_log_page(self, callsign: str):
         with requests.Session() as session:
+            session.verify = False  # disable HamLog SSL certificate verification
             hamlog_session = _HamlogSession(session)
             data = {"callsign": callsign, "csrf-progress": hamlog_session.token}
             response = session.post(f"{self._url}/progress.php", headers=self._headers, data=data)
